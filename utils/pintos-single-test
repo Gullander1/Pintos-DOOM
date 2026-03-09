@@ -1,0 +1,34 @@
+#!/usr/bin/env bash
+# Written by filst@ida
+
+if [[ $# -lt 1 ]]
+then
+    echo "Run a single Pintos test."
+    echo "Please supply the name of the test to run, for example: tests/userprog/read-zero"
+    exit 1
+fi
+
+VERBOSE=""
+if [[ "$1" == "VERBOSE" ]]
+then
+    VERBOSE="VERBOSE=1"
+    shift
+fi
+
+TEST="$1"
+
+if [[ "${TEST:0:6}" != "tests/" ]]
+then
+    TEST=tests/"$TEST"
+fi
+
+if [[ -e build ]]
+then
+    cd build/
+fi
+
+# Clean out temporary files to force make to re-run the test.
+rm -f "$TEST".{allput,output,result}
+
+make "$TEST".result $VERBOSE
+

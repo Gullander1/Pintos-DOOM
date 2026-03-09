@@ -1,0 +1,14 @@
+# -*- makefile -*-
+
+tests/%.output: FILESYSSOURCE = --filesys-size=2
+tests/%.output: PUTFILES = $(filter-out kernel.bin loader.bin, $^)
+
+tests/filst_TESTS = $(addprefix tests/filst/,sc-bad-write sc-bad-close sc-bad-nr-1 sc-bad-nr-2 sc-bad-nr-3 sc-bad-align-1 sc-bad-align-2 sc-bad-exit sc-write-buf)
+
+tests/filst_PROGS = $(tests/filst_TESTS)
+
+# Semi-automatic magic.
+$(foreach prog,$(tests/filst_PROGS),$(eval $(prog)_SRC += $(prog).c))
+$(foreach prog,$(tests/filst_PROGS),$(eval $(prog)_SRC += tests/main.c))
+$(foreach prog,$(tests/filst_PROGS),$(eval $(prog)_SRC += tests/lib.c))
+

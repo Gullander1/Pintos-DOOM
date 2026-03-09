@@ -1,0 +1,28 @@
+#!/usr/bin/env bash
+
+STARTCOMMIT="v2025"
+ENDCOMMIT="HEAD"
+REPO=$(dirname "${0}")
+cd "${REPO}" || exit
+
+if [ "$#" -lt 1 ]; then
+	echo "Usage: $(basename "${0}") LAB [COMMIT]"
+	echo "LAB: What lab you want to hand in"
+	echo "[optional] COMMIT: If you want to use a commit other than HEAD to create your handin"
+	exit	
+fi
+
+if [ "$#" -eq 2 ]; then
+	if [[ "$(git cat-file -t "${2}")" != "commit" ]]; then
+		echo "${2} is not a valid commit"
+		exit
+	fi
+	ENDCOMMIT="${2}"
+fi
+
+HANDIN="${REPO}/${1}.txt"
+
+#git format-patch "${STARTCOMMIT}..${ENDCOMMIT}" --stdout > "${HANDIN}"
+git diff "${STARTCOMMIT}..${ENDCOMMIT}" > "${HANDIN}"
+echo "Created ${HANDIN}, submit it through SendLab"
+

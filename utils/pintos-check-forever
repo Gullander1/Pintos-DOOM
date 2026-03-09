@@ -1,0 +1,80 @@
+#!/usr/bin/env bash
+# Written by filst@ida, modified by dagjo@ida (shellcheck)
+if [[ "$1" = "-h" ||  "$1" = "--help" ]]; then
+    printf "Usage: %s [-a]\nRun with -a to abort on first error.\n", "${0}"
+    exit;
+fi
+
+PWD=$(pwd);
+DIR=$(basename "${PWD}");
+ABORT_ON_FAIL="false"
+FAIL="true"
+
+for i in "$@"; do
+    if [ "$i" = "-a" ] ; then
+        ABORT_ON_FAIL="true"
+    fi
+done
+
+if [ "_$DIR" != "_userprog" ] ; then
+    printf "You must be in userprog directory\n";
+    exit;
+fi
+
+if expr "$(uname -s)" : "Linux.*" > /dev/null; then
+    MAKE="make"
+else
+    MAKE="gmake"
+fi
+
+((i=1));
+while (true); do
+    
+    printf "Test run %2d started ...\n" $i;
+
+    # Clear previous test results
+    find ./build -name '*.allput' -exec rm {} \; ;
+    find ./build -name '*.output' -exec rm {} \; ;
+    find ./build -name '*.errors' -exec rm {} \; ;
+    find ./build -name '*.result' -exec rm {} \; ;
+    
+    # Is it failsafe to run several Pintos concurrently?
+    # YES!! tests use different fs.dsk in /tmp !
+    FAIL="false"
+    if ! nice -n 20 ${MAKE} -j8 check > check.tmp 2> check.err ; then
+        cat check.err
+        printf "ERROR: '%s check' failed.\n", "${MAKE}"
+        FAIL="true"
+    fi
+    
+    if grep FAIL check.tmp ; then
+        FAIL="true"
+        printf "ERROR: 'grep found FAIL in result file'\n"
+        printf "ERROR: 'saving result files...'\n"
+
+        for test in $(grep '^FAIL tests/.*$' check.tmp | sort | uniq | cut -d' ' -f2 ) ; do
+            printf "mv -f build/%s.allput build/%s.allput.%s\n", "${test}" "${test}", "${i}"
+            mv -f "build/${test}.allput" "build/${test}.allput.${i}"
+            mv -f "build/${test}.output" "build/${test}.output.${i}"
+            mv -f "build/${test}.errors" "build/${test}.errors.${i}"
+            mv -f "build/${test}.result" "build/${test}.result.${i}"
+        done
+    fi
+
+    printf "Test run %2d DONE.\n" $i;
+    
+    if [ "$FAIL" == "true" ] && [ "$ABORT_ON_FAIL" = "true" ] ; then
+        break;
+    fi
+	((++i));
+done
+
+printf "Completed %s test runs.\n", "${i}";
+printf "The result of last run is in 'check.tmp'\n";
+printf "The result of failed runs is in respective test result files.\n";
+
+printf "Consider erasing old test failures:\n";
+printf "find ./build -name '*.allput.*' -exec rm {} \;\n"
+printf "find ./build -name '*.output.*' -exec rm {} \;\n"
+printf "find ./build -name '*.errors.*' -exec rm {} \;\n"
+printf "find ./build -name '*.result.*' -exec rm {} \;\n"
