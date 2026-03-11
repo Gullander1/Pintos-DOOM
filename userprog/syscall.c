@@ -217,7 +217,6 @@ static void syscall_handler(struct intr_frame *f)
             void *buffer = (void *) esp[2];
             unsigned size = (unsigned) esp[3];
 
-            // 2. Blockera orimliga storlekar direkt
             if (size > 16 * 1024 * 1024) { 
                 f->eax = -1;
                 break; 
