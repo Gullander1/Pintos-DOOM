@@ -39,7 +39,7 @@ This OS is designed to be run using [QEMU](https://www.qemu.org/).
 Navigate to the programs directory to compile and prepare the executable:
 
 ``` bash
-cd ../programs
+cd programs
 make clean
 make doompintos
 i686-elf-strip doompintos
@@ -50,7 +50,7 @@ i686-elf-strip doompintos
 Navigate to the userprog directory to compile the operating system:
 
 ``` bash
-cd ../userprog
+cd userprog
 make clean
 make 
 ```

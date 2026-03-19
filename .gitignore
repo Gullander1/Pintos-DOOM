@@ -304,6 +304,8 @@ flycheck_*.el
 # Project configuration settings like predefined Macros
 *.config
 
+!Make.config
+
 # Qt Creator settings
 *.creator
 
