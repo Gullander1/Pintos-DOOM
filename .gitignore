@@ -319,6 +319,8 @@ flycheck_*.el
 *.cxxflags
 *.cflags
 
+# Ignore the DISK
+*.dsk
 
 ### Tags ###
 # Ignore tags created by etags, ctags, gtags (GNU global) and cscope

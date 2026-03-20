@@ -641,12 +641,26 @@ sub run_qemu {
 #    push (@cmd, '-hdc', $disks[2]) if defined $disks[2];
 #    push (@cmd, '-hdd', $disks[3]) if defined $disks[3];
     push (@cmd, '-m', $mem);
+    
     push (@cmd, '-net', 'none');
-    # --- Changes for MAC-GRAPHIC ---
-    #push (@cmd, '-nographic') if $vga eq 'none';
-    push (@cmd, '-display', 'cocoa');
+    
+    # Automatically select the best display backend based on the OS
+    my $os = $^O;
+    if ($vga eq 'none') {
+        # Do not add any display arguments, let qemu run headlessly
+        # (Be careful with this if your OS expects a framebuffer!)
+    } elsif ($os eq 'darwin') {
+        # macOS
+        push (@cmd, '-display', 'cocoa');
+    } else {
+        # Linux and others (uses default/SDL/GTK depending on QEMU build)
+        # Leaving out the -display flag entirely usually makes QEMU pick 
+        # the best available GUI backend automatically on Linux.
+    }
     # ------------------------------
+    
     push (@cmd, '-serial', 'stdio'); #if $serial && $vga ne 'none';
+
     push (@cmd, '-S') if $debug eq 'monitor';
     push (@cmd, '-gdb', "tcp::$gdb_port", '-S') if $debug eq 'gdb';
     push (@cmd, '-monitor', 'null') if $vga eq 'none' && $debug eq 'none';
