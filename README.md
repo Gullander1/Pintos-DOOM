@@ -2,6 +2,7 @@
 ![License](https://img.shields.io/badge/license-GPL--2.0-blue.svg)
 ![Platform](https://img.shields.io/badge/platform-Pintos-orange.svg)
 ![Language](https://img.shields.io/badge/language-C-green.svg)
+[![GitHub](https://img.shields.io/badge/GitHub-View_Source_&_Download-181717?logo=github&style=flat)](https://github.com/Gullander1/Pintos-DOOM)
 
 This modified version of **Pintos** is specifically adapted to run **DOOM (1993)**. The project includes the adapted version of DOOM (located in `pintos/programs/doom`). This project and github-repo includes the .WAD-file from Shareware (Non-commercial game data).
 To support DOOM, this version of Pintos is featuring a custom VESA window manager and an adapted version of DOOM (1993).
